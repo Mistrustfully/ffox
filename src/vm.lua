@@ -6,11 +6,24 @@ local fnil = {}
 
 local function run(source, constants)
 	local ip = 1
-	local skip = 0
 	local stack = {}
+	local globals = {}
+
+	local skip = 1
+	local function skipable_ipairs(t)
+		local i = 0
+		local n = #t
+
+		return function()
+			i = i + skip
+			if i <= n then
+				return i, t[i]
+			end
+		end
+	end
 
 	local function read_byte()
-		skip = 1
+		skip = 2
 		return source[ip + 1]
 	end
 
@@ -66,14 +79,9 @@ local function run(source, constants)
 		)
 	end
 
-	for i = 1, #source, 1 do
-		if skip ~= 0 then
-			skip = skip - 1
-			goto continue
-		end
-
+	for i, instruction in skipable_ipairs(source) do
 		ip = i
-		local instruction = source[ip]
+		skip = 1
 
 		local v = match(instruction, {
 			[opcode.fnil] = function()
@@ -131,8 +139,41 @@ local function run(source, constants)
 				table.insert(stack, table.remove(stack) == table.remove(stack))
 			end,
 
+			[opcode.jump] = function()
+				skip = read_byte()
+			end,
+
+			[opcode.jump_if_false] = function()
+				local jump = read_byte()
+				if not table.remove(stack) then
+					skip = jump
+				end
+			end,
+
+			[opcode.get_global] = function()
+				local name = read_constant()
+				local value = globals[name]
+				if not value then
+					error(("Undefined global %s!"):format(name))
+				end
+
+				table.insert(stack, value)
+			end,
+
+			[opcode.set_global] = function()
+				local name = read_constant()
+				local value = table.remove(stack)
+				globals[name] = value
+			end,
+
 			[opcode.freturn] = function()
 				return table.remove(stack)
+			end,
+
+			[opcode.call] = function()
+				local arg_count = read_byte()
+				local fn = table.remove(stack)
+				run(fn[1], fn[2])
 			end,
 
 			default = function()
@@ -143,9 +184,7 @@ local function run(source, constants)
 		if v then
 			return v
 		end
-
-		::continue::
 	end
 end
 
-return { run = run, opcode = opcode }
+return { run = run }

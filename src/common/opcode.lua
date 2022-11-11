@@ -20,8 +20,17 @@ return enum({
 	"greater",
 	"less",
 
+	-- Jumps
+	"jump",
+	"jump_if_false",
+
+	-- Setters & Getters
+	"get_global",
+	"set_global",
+
 	-- Others
 	"freturn",
 	"print",
+	"call",
 	"pop",
 })
