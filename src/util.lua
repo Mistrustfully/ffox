@@ -1,27 +1,29 @@
 --- Matches `match` with one of the indexes in `matches`
-local function match(match, matches)
-	local fn = matches[match]
+local function match(matchee, matches)
+	local fn = matches[matchee]
 
 	if fn == nil then
-		if matches.default then
-			return matches.default()
-		end
-
-		return nil
+		fn = matches.default
 	end
 
-	return fn()
+	if type(fn) == "function" then
+		return fn()
+	else
+		return fn
+	end
 end
 
 --- Generates an enum table with an array of strings.
 local function enum(enums)
 	local enum_table = {}
+	local reverse_table = {}
 
 	for i, name in ipairs(enums) do
 		enum_table[name] = i - 1
+		reverse_table[i - 1] = name
 	end
 
-	return enum_table
+	return enum_table, reverse_table
 end
 
 --- Pretty prints tables and other values.
@@ -35,10 +37,15 @@ local function pprint(value, tabs_)
 			if type(v) == "table" then
 				pprint(v, tabs + 1)
 			else
-				print(indentation .. "    " .. tostring(i) .. " = " .. tostring(v))
+				local print_v = tostring(v)
+				if type(v) == "string" then
+					print_v = '"' .. print_v .. '"'
+				end
+
+				print(indentation .. "    " .. tostring(i) .. " = " .. print_v .. ",")
 			end
 		end
-		print(indentation .. "}")
+		print(indentation .. "},")
 	else
 		print(value)
 	end

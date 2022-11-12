@@ -5,22 +5,11 @@ local match, pprint = util.match, util.pprint
 local fnil = {}
 
 local function run(source, constants)
-	local ip = 1
+	local ip = 0
 	local stack = {}
 	local globals = {}
 
 	local skip = 1
-	local function skipable_ipairs(t)
-		local i = 0
-		local n = #t
-
-		return function()
-			i = i + skip
-			if i <= n then
-				return i, t[i]
-			end
-		end
-	end
 
 	local function read_byte()
 		skip = 2
@@ -31,11 +20,11 @@ local function run(source, constants)
 		return constants[read_byte()]
 	end
 
-	local function pop_as(typeCheck)
+	local function pop_as(type_check)
 		local value = table.remove(stack)
 
-		if type(value) ~= typeCheck then
-			error("Value is not " .. typeCheck .. "!")
+		if type(value) ~= type_check then
+			error("Value is not " .. type_check .. "!")
 		end
 
 		if value == fnil then
@@ -79,9 +68,11 @@ local function run(source, constants)
 		)
 	end
 
-	for i, instruction in skipable_ipairs(source) do
-		ip = i
+	while ip < #source do
+		ip = ip + skip
 		skip = 1
+
+		local instruction = source[ip]
 
 		local v = match(instruction, {
 			[opcode.fnil] = function()
@@ -171,7 +162,6 @@ local function run(source, constants)
 			end,
 
 			[opcode.call] = function()
-				local arg_count = read_byte()
 				local fn = table.remove(stack)
 				run(fn[1], fn[2])
 			end,
