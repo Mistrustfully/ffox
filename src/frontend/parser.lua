@@ -7,6 +7,9 @@ local expr, statement = ast.expr, ast.statement
 
 local precedence_enum = enum({
 	"none",
+	"assignment",
+	"equality",
+	"comparison",
 	"term",
 	"factor",
 	"unary",
@@ -22,6 +25,10 @@ local function number(parser)
 	return expr.number(parser.previous().lex)
 end
 
+local function string(parser)
+	return expr.string(parser.previous().lex)
+end
+
 local function binary(parser, left)
 	local operator = parser.previous()
 	local right = parser.parse_precendence(get_rule(operator.type).precedence + 1)
@@ -29,7 +36,7 @@ local function binary(parser, left)
 end
 
 local function grouping(parser)
-	local exp = parser.parse_precendence(precedence_enum.term)
+	local exp = parser.parse_precendence()
 	parser.advance()
 	return exp
 end
@@ -40,21 +47,37 @@ local function unary(parser)
 	return expr.unary(operand, operator.type)
 end
 
-local function variable(parser)
+local function variable(parser, canAssign)
+	if canAssign then
+		local prev = parser.previous().lex
+		parser.advance()
+		return statement.var(prev, parser.expression, false)
+	end
 	return expr.variable(parser.previous().lex)
 end
 
+local function assignment(parser, canAssign)
+	print(canAssign)
+	return statement.var(parser.previous().lex, parser.parse_precendence(precedence_enum.assignment), false)
+end
+
 rules = {
+	[token_type.string] = { prefix = string, precedence_enum = precedence_enum.none },
 	[token_type.number] = { prefix = number, precedence = precedence_enum.none },
 
 	[token_type.star] = { infix = binary, precedence = precedence_enum.factor },
 	[token_type.slash] = { infix = binary, precedence = precedence_enum.factor },
 	[token_type.plus] = { infix = binary, precedence = precedence_enum.term },
 	[token_type.minus] = { prefix = unary, infix = binary, precedence = precedence_enum.term },
+
+	[token_type.greater] = { infix = binary, precedence = precedence_enum.comparison },
+	[token_type.less] = { infix = binary, precedence = precedence_enum.comparison },
+	[token_type.equal] = { infix = assignment, precedence = precedence_enum.assignment },
+
 	[token_type.l_paren] = { prefix = grouping, precedence = precedence_enum.grouping },
 	[token_type.eof] = { precedence = precedence_enum.none },
 	[token_type.bang] = { prefix = unary, precedence = precedence_enum.unary },
-	[token_type.identifier] = { prefix = variable, precedence_enum.none },
+	[token_type.identifier] = { prefix = variable, precedence = precedence_enum.none },
 }
 
 --- Takes an array of tokens and converts it into an AST, via pratt parsing.
@@ -84,14 +107,16 @@ local function parse(tokens)
 	end
 
 	function self.parse_precendence(precedence_)
-		local precedence = precedence_ or precedence_enum.term
+		local precedence = precedence_ or precedence_enum.assignment
 		local next_token = self.advance()
 		local prefix_rule = get_rule(next_token.type).prefix
 		if prefix_rule == nil then
-			error("expect expression!")
+			return
 		end
 
-		local expression = prefix_rule(self)
+		local canAssign = precedence <= precedence_enum.assignment
+		local expression = prefix_rule(self, canAssign)
+
 		while self.peek() and get_rule(self.peek().type).precedence >= precedence do
 			next_token = self.advance()
 			local infix_rule = get_rule(next_token.type).infix
@@ -126,8 +151,16 @@ local function parse(tokens)
 						self.consume(token_type.equal, "Expected equal sign after identifier name!")
 						return statement.var(var_name.lex, self.parse_precendence(), true)
 					end,
+					[token_type.l_brace] = function()
+						local statements = {}
+						self.advance()
+						while self.peek().type ~= token_type.r_brace and self.peek().type ~= token_type.eof do
+							table.insert(statements, self.statement())
+						end
+						return statement.block(statements)
+					end,
 					default = function()
-						return self.parse_precendence()
+						return statement.expr(self.parse_precendence())
 					end,
 				})
 			)

@@ -13,6 +13,10 @@ local function number_expr(literal)
 	return { type = "number", literal = tonumber(literal) }
 end
 
+local function string_expr(literal)
+	return { type = "string", literal = string.sub(literal, 2, #literal - 1) }
+end
+
 local function variable_expr(literal)
 	return { type = "variable", literal = literal }
 end
@@ -25,7 +29,21 @@ local function var_statement(name, expr, constant)
 	return { type = "var_statement", name = name, expr = expr, constant = constant }
 end
 
+local function expr_statement(expr)
+	return { type = "expr_statement", expr = expr }
+end
+
+local function block_statement(statements)
+	return { type = "block", statements = statements }
+end
+
 return {
-	expr = { binary = binary_expr, unary = unary_expr, number = number_expr, variable = variable_expr },
-	statement = { freturn = return_statement, var = var_statement },
+	expr = {
+		binary = binary_expr,
+		unary = unary_expr,
+		number = number_expr,
+		string = string_expr,
+		variable = variable_expr,
+	},
+	statement = { freturn = return_statement, var = var_statement, expr = expr_statement, block = block_statement },
 }

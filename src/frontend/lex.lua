@@ -139,7 +139,7 @@ local function lex(source)
 						advance()
 						return token_type.greater_equal
 					end
-					return token_type.greater_equal
+					return token_type.greater
 				end,
 				["<"] = function()
 					if peek() == "=" then
