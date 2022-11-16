@@ -1,4 +1,4 @@
 return {
-	compiler = require("src.compiler"),
+	compiler = require("src.frontend.compiler"),
 	vm = require("src.vm"),
 }

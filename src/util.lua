@@ -27,15 +27,20 @@ local function enum(enums)
 end
 
 --- Pretty prints tables and other values.
-local function pprint(value, tabs_)
+local function pprint(value, index, tabs_)
 	local tabs = tabs_ or 0
 	local indentation = ("    "):rep(tabs)
 
 	if type(value) == "table" then
-		print(indentation .. "{")
+		local index_string = ""
+		if index then
+			index_string = tostring(index) .. " = "
+		end
+
+		print(indentation .. index_string .. "{")
 		for i, v in pairs(value) do
 			if type(v) == "table" then
-				pprint(v, tabs + 1)
+				pprint(v, i, tabs + 1)
 			else
 				local print_v = tostring(v)
 				if type(v) == "string" then

@@ -5,6 +5,9 @@ return enum({
 	"string",
 	"number",
 	"identifier",
+	"true",
+	"false",
+	"nil",
 
 	-- arithmetic
 	"bang",
@@ -41,4 +44,5 @@ return enum({
 
 	-- other
 	"error",
+	"eof",
 })

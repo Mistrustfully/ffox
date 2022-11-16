@@ -1,4 +1,4 @@
-local token_type = require("src.parser.token")
+local token_type = require("src.common.token")
 local match = require("src.util").match
 
 local function is_whitespace(char)
@@ -14,7 +14,7 @@ local function is_alpha(char)
 end
 
 --- Takes a source file and returns an array of tokens.
-local function scan(source)
+local function lex(source)
 	local tokens = {}
 	local start = 0
 	local current = 0
@@ -73,7 +73,7 @@ local function scan(source)
 
 		-- Check if number
 		if is_digit(char) or (is_digit(char, true) and is_digit(peek())) then
-			local foundDot = false
+			local foundDot = char == "."
 			advance_until(function(p)
 				local res = is_digit(p, not foundDot, true) and not at_end()
 				if p == "." then
@@ -96,7 +96,7 @@ local function scan(source)
 					let = token_type.let,
 					["return"] = token_type["return"],
 					["break"] = token_type["break"],
-					["fn"] = token_type.fn,
+					fn = token_type.fn,
 					default = token_type.identifier,
 				}))
 			)
@@ -127,6 +127,33 @@ local function scan(source)
 				[")"] = token_type.r_paren,
 				["["] = token_type.l_bracket,
 				["]"] = token_type.r_bracket,
+				["!"] = function()
+					if peek() == "=" then
+						advance()
+						return token_type.bang_equal
+					end
+					return token_type.bang
+				end,
+				[">"] = function()
+					if peek() == "=" then
+						advance()
+						return token_type.greater_equal
+					end
+					return token_type.greater_equal
+				end,
+				["<"] = function()
+					if peek() == "=" then
+						advance()
+						return token_type.less_equal
+					end
+					return token_type.less
+				end,
+				["."] = token_type.dot,
+				[","] = token_type.comma,
+				["+"] = token_type.plus,
+				["-"] = token_type.minus,
+				["*"] = token_type.star,
+				["/"] = token_type.slash,
 				["="] = function()
 					if peek() == "=" then
 						advance()
@@ -151,7 +178,8 @@ local function scan(source)
 		end
 	end
 
+	table.insert(tokens, new_token(token_type.eof))
 	return tokens
 end
 
-return scan
+return lex
