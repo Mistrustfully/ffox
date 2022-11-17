@@ -17,6 +17,10 @@ local function string_expr(literal)
 	return { type = "string", literal = string.sub(literal, 2, #literal - 1) }
 end
 
+local function literal_expr(literal)
+	return { type = "literal", literal = literal }
+end
+
 local function variable_expr(literal)
 	return { type = "variable", literal = literal }
 end
@@ -37,13 +41,24 @@ local function block_statement(statements)
 	return { type = "block", statements = statements }
 end
 
+local function if_statement(expr, if_branch, else_branch)
+	return { type = "if_statement", expr = expr, if_branch = if_branch, else_branch = else_branch }
+end
+
 return {
 	expr = {
 		binary = binary_expr,
 		unary = unary_expr,
 		number = number_expr,
 		string = string_expr,
+		literal = literal_expr,
 		variable = variable_expr,
 	},
-	statement = { freturn = return_statement, var = var_statement, expr = expr_statement, block = block_statement },
+	statement = {
+		freturn = return_statement,
+		var = var_statement,
+		expr = expr_statement,
+		block = block_statement,
+		if_statement = if_statement,
+	},
 }

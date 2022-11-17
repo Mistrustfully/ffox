@@ -1,5 +1,5 @@
 local util = require("src.util")
-local opcode = require("src.common.opcode")
+local opcode = require("src.common.opcode")[1]
 
 local match, pprint = util.match, util.pprint
 local fnil = {}
@@ -87,6 +87,10 @@ local function run(source, constants)
 				table.insert(stack, false)
 			end,
 
+			[opcode.fnot] = function()
+				table.insert(stack, not pop_as("boolean"))
+			end,
+
 			[opcode.constant] = function()
 				table.insert(stack, read_constant())
 			end,
@@ -157,6 +161,16 @@ local function run(source, constants)
 				globals[name] = value
 			end,
 
+			[opcode.get_local] = function()
+				local slot = read_byte()
+				table.insert(stack, stack[slot])
+			end,
+
+			[opcode.set_local] = function()
+				local slot = read_byte()
+				stack[slot] = stack[#stack]
+			end,
+
 			[opcode.freturn] = function()
 				return table.remove(stack)
 			end,
@@ -171,7 +185,7 @@ local function run(source, constants)
 			end,
 		})
 
-		if v then
+		if v ~= nil then
 			return v
 		end
 	end

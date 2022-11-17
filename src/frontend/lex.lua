@@ -96,6 +96,11 @@ local function lex(source)
 					let = token_type.let,
 					["return"] = token_type["return"],
 					["break"] = token_type["break"],
+					["if"] = token_type.if_,
+					["else"] = token_type.else_,
+					["true"] = token_type.ftrue,
+					["false"] = token_type.ffalse,
+					["nil"] = token_type.fnil,
 					fn = token_type.fn,
 					default = token_type.identifier,
 				}))

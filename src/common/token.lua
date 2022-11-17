@@ -5,9 +5,9 @@ return enum({
 	"string",
 	"number",
 	"identifier",
-	"true",
-	"false",
-	"nil",
+	"ftrue",
+	"ffalse",
+	"fnil",
 
 	-- arithmetic
 	"bang",
@@ -39,6 +39,8 @@ return enum({
 	"const",
 	"let",
 	"fn",
+	"if_",
+	"else_",
 	"return",
 	"break",
 
