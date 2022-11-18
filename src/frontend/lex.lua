@@ -109,6 +109,7 @@ local function lex(source)
 					["true"] = token_type.ftrue,
 					["false"] = token_type.ffalse,
 					["nil"] = token_type.fnil,
+					["for"] = token_type["for"],
 					fn = token_type.fn,
 					default = token_type.identifier,
 				}))

@@ -62,7 +62,7 @@ local function variable(parser, canAssign)
 	if canAssign and parser.peek().type == token_type.equal then
 		local name = parser.previous().lex
 		parser.advance()
-		return statement.var(name, parser.parse_precendence(precedence_enum.assignment), false)
+		return expr.variable(name, parser.parse_precendence())
 	else
 		return expr.variable(parser.previous().lex)
 	end
@@ -153,6 +153,7 @@ local function parse(tokens)
 
 	function self.statement()
 		local token = self.peek()
+
 		return match(token.type, {
 			[token_type["return"]] = function()
 				self.advance()
@@ -197,6 +198,30 @@ local function parse(tokens)
 				local statements = block()
 
 				return statement.while_statement(expression, statements)
+			end,
+			[token_type["for"]] = function()
+				self.advance()
+
+				local initial
+				if self.peek().type ~= token_type.comma then
+					initial = self.statement()
+				end
+				self.consume(token_type.comma, "Expected a ','!")
+
+				local conditional
+				if self.peek().type ~= token_type.comma then
+					conditional = self.parse_precendence()
+				end
+				self.consume(token_type.comma, "Expected a ','!")
+
+				local increment
+				if self.peek().type ~= token_type.l_brace then
+					increment = self.parse_precendence()
+				end
+				self.consume(token_type.l_brace, "Expected '{' after increment expression!")
+
+				local statements = block()
+				return statement.for_statement(initial, conditional, increment, statements)
 			end,
 			[token_type.fn] = function() end,
 			default = function()

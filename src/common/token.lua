@@ -44,6 +44,7 @@ return enum({
 	"return",
 	"while",
 	"break",
+	"for",
 
 	-- other
 	"error",

@@ -179,6 +179,10 @@ local function run(source, constants)
 				run(fn[1], fn[2])
 			end,
 
+			[opcode.pop] = function()
+				table.remove(stack)
+			end,
+
 			default = function()
 				error(("Missing OpCode %s!"):format(instruction))
 			end,

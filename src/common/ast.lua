@@ -21,8 +21,8 @@ local function literal_expr(literal)
 	return { type = "literal", literal = literal }
 end
 
-local function variable_expr(literal)
-	return { type = "variable", literal = literal }
+local function variable_expr(name, assign_value)
+	return { type = "variable", name = name, assign_value = assign_value }
 end
 
 local function return_statement(expr)
@@ -49,6 +49,16 @@ local function while_statement(expr, statements)
 	return { type = "while_statement", expr = expr, statements = statements }
 end
 
+local function for_statement(initial, conditional, increment, statements)
+	return {
+		type = "for_statement",
+		conditional = conditional,
+		initial = initial,
+		increment = increment,
+		statements = statements,
+	}
+end
+
 return {
 	expr = {
 		binary = binary_expr,
@@ -65,5 +75,6 @@ return {
 		block = block_statement,
 		if_statement = if_statement,
 		while_statement = while_statement,
+		for_statement = for_statement,
 	},
 }
