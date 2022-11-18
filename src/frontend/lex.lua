@@ -191,7 +191,7 @@ local function lex(source)
 		end
 	end
 
-	table.insert(tokens, new_token(token_type.eof))
+	table.insert(tokens, new_token(token_type.eof, "EOF"))
 	return tokens
 end
 

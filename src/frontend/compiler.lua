@@ -15,6 +15,47 @@ local function compile(ast, bytes_, constants_, state_)
 		return compile(statement, bytes, constants, state)
 	end
 
+	local function fold_constants(node)
+		if node.type == "number" then
+			return node
+		end
+
+		if node.type == "binary_expr" then
+			if
+				(node.left.type ~= "binary_expr" and node.left.type ~= "number")
+				or (node.right.type ~= "binary_expr" and node.right.type ~= "number")
+			then
+				return node
+			end
+			local result_left = fold_constants(node.left)
+			local result_right = fold_constants(node.right)
+
+			if result_left.type == "number" and result_right.type == "number" then
+				local left = result_left.literal
+				local right = result_right.literal
+
+				local literal = match(node.operator, {
+					[token_type.star] = left * right,
+					[token_type.slash] = left / right,
+					[token_type.plus] = left + right,
+					[token_type.minus] = left - right,
+					[token_type.less] = left < right,
+					[token_type.less_equal] = left <= right,
+					[token_type.greater] = left > right,
+					[token_type.greater_equal] = left >= right,
+					[token_type.equal_equal] = left == right,
+				})
+
+				return {
+					type = type(literal) == "number" and "number" or "literal",
+					literal = literal,
+				}
+			end
+		end
+
+		return node
+	end
+
 	local function resolve_local(name)
 		for i = #state.locals, 1, -1 do
 			local local_ = state.locals[i]
@@ -107,11 +148,18 @@ local function compile(ast, bytes_, constants_, state_)
 			)
 		end,
 		binary_expr = function()
-			call(ast.left)
-			call(ast.right)
+			local node = fold_constants(ast)
+			if node.type ~= "binary_expr" then
+				call(node)
+				return
+			end
+
+			call(node.left)
+			call(node.right)
+
 			table.insert(
 				bytes,
-				match(ast.operator, {
+				match(node.operator, {
 					[token_type.star] = opcodes.mul,
 					[token_type.slash] = opcodes.div,
 					[token_type.plus] = opcodes.add,
