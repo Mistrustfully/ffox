@@ -45,6 +45,10 @@ local function if_statement(expr, if_branch, else_branch)
 	return { type = "if_statement", expr = expr, if_branch = if_branch, else_branch = else_branch }
 end
 
+local function while_statement(expr, statements)
+	return { type = "while_statement", expr = expr, statements = statements }
+end
+
 return {
 	expr = {
 		binary = binary_expr,
@@ -60,5 +64,6 @@ return {
 		expr = expr_statement,
 		block = block_statement,
 		if_statement = if_statement,
+		while_statement = while_statement,
 	},
 }

@@ -43,6 +43,13 @@ local function lex(source)
 		return { type = t, lex = str or source:sub(start, current), start = start, current = current, line = line }
 	end
 
+	-- Shebang support
+	if peek() == "#" and source:sub(current + 2, current + 2) == "!" then
+		advance_until(function(np)
+			return not (np == "\n" or at_end())
+		end)
+	end
+
 	while not at_end() do
 		-- Skip all whitespace
 		if is_whitespace(peek()) then
@@ -95,6 +102,7 @@ local function lex(source)
 					const = token_type.const,
 					let = token_type.let,
 					["return"] = token_type["return"],
+					["while"] = token_type["while"],
 					["break"] = token_type["break"],
 					["if"] = token_type.if_,
 					["else"] = token_type.else_,

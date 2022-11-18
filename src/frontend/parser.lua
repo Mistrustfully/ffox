@@ -35,7 +35,7 @@ local function literal(parser)
 		["false"] = false,
 		["nil"] = nil,
 		default = function()
-			warn("Unknown literal!")
+			error("Unknown literal!")
 		end,
 	}))
 end
@@ -66,10 +66,6 @@ local function variable(parser, canAssign)
 	else
 		return expr.variable(parser.previous().lex)
 	end
-end
-
-local function assignment(parser, canAssign)
-	return statement.var(parser.previous().lex, parser.parse_precendence(precedence_enum.assignment), false)
 end
 
 rules = {
@@ -181,7 +177,7 @@ local function parse(tokens)
 			[token_type.if_] = function()
 				self.advance()
 
-				local expr = self.parse_precendence()
+				local expression = self.parse_precendence()
 				self.consume(token_type.l_brace, "Expected '{' after if statement expression!")
 				local statements = block()
 				local else_statements = {}
@@ -192,7 +188,15 @@ local function parse(tokens)
 					else_statements = block()
 				end
 
-				return statement.if_statement(expr, statements, else_statements)
+				return statement.if_statement(expression, statements, else_statements)
+			end,
+			[token_type["while"]] = function()
+				self.advance()
+				local expression = self.parse_precendence()
+				self.consume(token_type.l_brace, "Expected '{' after while loop expression!")
+				local statements = block()
+
+				return statement.while_statement(expression, statements)
 			end,
 			[token_type.fn] = function() end,
 			default = function()

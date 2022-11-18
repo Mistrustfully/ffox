@@ -11,11 +11,13 @@ local function for_each_file(dir, fn)
 			fn(opened_file, file)
 		end
 	else
-		warn("Directory doesn't exist!")
+		error("Directory doesn't exist!")
 	end
 end
 
-for_each_file("test", function(file, file_name)
+for_each_file("test", function(file, file_name_)
+	local file_name = file_name_:gsub("test/", "")
+
 	local source = file:read("a")
 	local tokens = lang.lexer(source)
 	local ast = lang.parser(tokens)
@@ -23,8 +25,8 @@ for_each_file("test", function(file, file_name)
 	local result = lang.vm.run(program.bytes, program.constants)
 
 	if result then
-		print("\27[1;32m [PASS] \27[0m" .. file_name)
+		print("\27[1;32m  [PASS]  \27[0;1m" .. file_name)
 	else
-		print("\27[1;31m [FAILED] \27[0m" .. file_name)
+		print("\27[1;31m [FAILED] \27[0;1m" .. file_name)
 	end
 end)

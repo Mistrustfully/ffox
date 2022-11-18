@@ -42,6 +42,7 @@ return enum({
 	"if_",
 	"else_",
 	"return",
+	"while",
 	"break",
 
 	-- other

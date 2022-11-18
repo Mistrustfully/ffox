@@ -32,14 +32,14 @@ local function compile(ast, bytes_, constants_, state_)
 		end
 	end
 
-	local function make_jump(type)
+	local function make_jump(type, location)
 		table.insert(bytes, type or opcodes.jump)
-		table.insert(bytes, 0)
+		table.insert(bytes, location or 0)
 		return #bytes
 	end
 
 	local function patch_jump(location)
-		bytes[location] = #bytes - location
+		bytes[location] = #bytes + 1
 	end
 
 	match(ast.type, {
@@ -143,6 +143,15 @@ local function compile(ast, bytes_, constants_, state_)
 				call_statements(ast.else_branch)
 				patch_jump(else_jump)
 			end
+		end,
+		while_statement = function()
+			local location = #bytes
+			call(ast.expr)
+			local break_jump = make_jump(opcodes.jump_if_false)
+			call_statements(ast.statements)
+
+			make_jump(opcodes.jump, location + 1)
+			bytes[break_jump] = #bytes + 1
 		end,
 		expr_statement = function()
 			call(ast.expr)

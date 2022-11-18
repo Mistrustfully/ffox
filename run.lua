@@ -4,6 +4,11 @@ local pprint = require("src.util").pprint
 local decompile_bytes = require("src.debug")
 
 local file = io.open(arg[1])
+if not file then
+	print("File doesn't exist!")
+	return
+end
+
 local source = file:read("a")
 
 local tokens = ffox.lexer(source)

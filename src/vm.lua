@@ -9,10 +9,10 @@ local function run(source, constants)
 	local stack = {}
 	local globals = {}
 
-	local skip = 1
+	local jump = 1
 
 	local function read_byte()
-		skip = 2
+		jump = ip + 2
 		return source[ip + 1]
 	end
 
@@ -69,11 +69,10 @@ local function run(source, constants)
 	end
 
 	while ip < #source do
-		ip = ip + skip
-		skip = 1
+		ip = jump
+		jump = ip + 1
 
 		local instruction = source[ip]
-
 		local v = match(instruction, {
 			[opcode.fnil] = function()
 				table.insert(stack, fnil)
@@ -135,13 +134,13 @@ local function run(source, constants)
 			end,
 
 			[opcode.jump] = function()
-				skip = read_byte()
+				jump = read_byte()
 			end,
 
 			[opcode.jump_if_false] = function()
-				local jump = read_byte()
+				local to_jump = read_byte()
 				if not table.remove(stack) then
-					skip = jump
+					jump = to_jump
 				end
 			end,
 
