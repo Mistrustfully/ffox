@@ -1,11 +1,24 @@
 [package]
 name = "mistrustfully/ffox"
-version = "0.4.0"
-registry = "https://github.com/UpliftGames/wally-index"
-license = "MIT"
+description = "A simple programming language written in Lua"
 authors = ["Christian Fletcher <mistrustfully@gmail.com>"]
-realm = "shared"
-exclude = ["run.lua", "test.lua", "test"]
+license = "MIT"
+version = "1.1.0"
 
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+include = ["out/", "default.project.json"]
+exclude = [
+	"node_modules",
+	"src",
+	".eslintrc",
+	".prettierrc",
+	"aftman.toml",
+	"package-lock.json",
+	"package.json",
+	"selene.toml",
+	"stylua.toml",
+	"tsconfig.json",
+]
 
 [dependencies]

@@ -1,6 +1,6 @@
 {
 	"name": "ffox",
 	"tree": {
-		"$path": "src"
+		"$path": "out/"
 	}
 }

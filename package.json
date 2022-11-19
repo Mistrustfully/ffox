@@ -1,0 +1,35 @@
+{
+	"name": "@rbxts/ffox",
+	"version": "1.1.0",
+	"description": "Typescript typings for ffox, a simple programming language written in Lua.",
+	"main": "out/init.lua",
+	"homepage": "https://github.com/Mistrustfully/ffox/tree/roblox",
+	"scripts": {
+		"build": "npx roblox-ts build",
+		"watch": "rbxtsc -w",
+		"prepublishOnly": "npm run build"
+	},
+	"keywords": [],
+	"author": "Christian Fletcher <mistrustfully@gmail.com>",
+	"license": "MIT",
+	"types": "out/index.d.ts",
+	"files": [
+		"out",
+		"!**/*.tsbuildinfo"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"@rbxts/compiler-types": "^2.0.2-types.0",
+		"@rbxts/types": "^1.0.648",
+		"@typescript-eslint/eslint-plugin": "^5.43.0",
+		"@typescript-eslint/parser": "^5.43.0",
+		"eslint": "^8.28.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"eslint-plugin-roblox-ts": "^0.0.34",
+		"prettier": "^2.7.1",
+		"typescript": "^4.9.3"
+	}
+}
