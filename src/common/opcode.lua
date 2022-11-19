@@ -1,4 +1,4 @@
-local enum = require("src.util").enum
+local enum = require(script.Parent.Parent.util).enum
 
 return
 	{

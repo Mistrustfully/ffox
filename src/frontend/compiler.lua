@@ -1,6 +1,6 @@
-local opcodes = require("src.common.opcode")[1]
-local token_type = require("src.common.token")
-local util = require("src.util")
+local opcodes = require(script.Parent.Parent.common.opcode)[1]
+local token_type = require(script.Parent.Parent.common.token)
+local util = require(script.Parent.Parent.util)
 
 local match, merge = util.match, util.merge
 

@@ -1,6 +1,6 @@
 return {
-	compiler = require("src.frontend.compiler"),
-	parser = require("src.frontend.parser"),
-	lexer = require("src.frontend.lex"),
-	vm = require("src.vm"),
+	compiler = require(script.frontend.compiler),
+	parser = require(script.frontend.parser),
+	lexer = require(script.frontend.lex),
+	vm = require(script.vm),
 }

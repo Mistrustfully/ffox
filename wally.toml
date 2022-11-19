@@ -1,0 +1,11 @@
+[package]
+name = "mistrustfully/ffox"
+version = "0.4.0"
+registry = "https://github.com/UpliftGames/wally-index"
+license = "MIT"
+authors = ["Christian Fletcher <mistrustfully@gmail.com>"]
+realm = "shared"
+exclude = ["run.lua", "test.lua", "test"]
+
+
+[dependencies]

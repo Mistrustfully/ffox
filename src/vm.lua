@@ -1,5 +1,5 @@
-local util = require("src.util")
-local opcode = require("src.common.opcode")[1]
+local util = require(script.Parent.util)
+local opcode = require(script.Parent.common.opcode)[1]
 
 local match, pprint = util.match, util.pprint
 local fnil = {}

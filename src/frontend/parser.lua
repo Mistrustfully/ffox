@@ -1,6 +1,6 @@
-local token_type = require("src.common.token")
-local util = require("src.util")
-local ast = require("src.common.ast")
+local token_type = require(script.Parent.Parent.common.token)
+local util = require(script.Parent.Parent.util)
+local ast = require(script.Parent.Parent.common.ast)
 
 local pprint, enum, match = util.pprint, util.enum, util.match
 local expr, statement = ast.expr, ast.statement

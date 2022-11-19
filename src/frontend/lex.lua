@@ -1,5 +1,5 @@
-local token_type = require("src.common.token")
-local match = require("src.util").match
+local token_type = require(script.Parent.Parent.common.token)
+local match = require(script.Parent.Parent.util).match
 
 local function is_whitespace(char)
 	return char:find("%s") ~= nil
