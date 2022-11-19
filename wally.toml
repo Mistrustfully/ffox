@@ -3,7 +3,7 @@ name = "mistrustfully/ffox"
 description = "A simple programming language written in Lua"
 authors = ["Christian Fletcher <mistrustfully@gmail.com>"]
 license = "MIT"
-version = "1.1.0"
+version = "1.1.1"
 
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"

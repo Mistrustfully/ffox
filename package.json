@@ -1,6 +1,6 @@
 {
 	"name": "@rbxts/ffox",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "Typescript typings for ffox, a simple programming language written in Lua.",
 	"main": "out/init.lua",
 	"homepage": "https://github.com/Mistrustfully/ffox/tree/roblox",
