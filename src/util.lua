@@ -14,7 +14,7 @@ local function match(matchee, matches)
 end
 
 --- Generates an enum table with an array of strings.
-local function enum(enums)
+local function enum(enums, return_reverse)
 	local enum_table = {}
 	local reverse_table = {}
 
@@ -23,7 +23,11 @@ local function enum(enums)
 		reverse_table[i - 1] = name
 	end
 
-	return enum_table, reverse_table
+	if return_reverse then
+		return enum_table, reverse_table
+	else
+		return enum_table
+	end
 end
 
 --- Pretty prints tables and other values.

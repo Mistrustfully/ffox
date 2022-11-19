@@ -23,7 +23,7 @@ print("result", result) -- We now can print the result!!
 ```
 
 the simple way:
-```
+```lua
 local ffox = require(--[[ffox src path]])
 local result = ffox.run("return true")
 

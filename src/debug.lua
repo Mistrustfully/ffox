@@ -18,24 +18,22 @@ local function grey(str)
 	return "\027[30m" .. str .. "\027[0m"
 end
 
-local function decompile_bytes(bytes, constants, _tabs)
+local function decompile_bytes(bytes, constants, _tabs, _name)
 	local tabs = _tabs or ""
+	local dash = "──────"
+	print(purple(tabs .. "╭" .. dash .. "<" .. " " .. (_name or "main") .. " <" .. dash))
 	-- Scan the program for functions
 	for _, v in pairs(constants) do
-		if v.bytes then
-			local open_arrow = ("─"):rep(#tabs + 2) .. "────>"
-			local closed_arrow = "<────" .. ("─"):rep(#tabs + 2)
-
-			print(purple(open_arrow .. " " .. v.name .. " " .. open_arrow))
-			decompile_bytes(v.bytes, v.constants, tabs .. "  ")
-			print(purple(closed_arrow .. " " .. v.name .. " " .. closed_arrow))
+		if type(v) == "table" and v.bytes then
+			decompile_bytes(v.bytes, v.constants, tabs .. "│", v.name)
 		end
 	end
 
 	local i = 0
 	while i < #bytes do
 		i = i + 1
-		local output = tabs
+		local output = purple("│")
+			.. purple(tabs)
 			.. red("[" .. tostring(i) .. "]")
 			.. grey(" (" .. tostring(bytes[i] .. ") "))
 			.. opcode_reverse[bytes[i]]
@@ -74,6 +72,8 @@ local function decompile_bytes(bytes, constants, _tabs)
 
 		print(output)
 	end
+
+	print(purple(tabs .. "╰" .. dash .. "> " .. (_name or "main") .. " >" .. dash))
 end
 
 return decompile_bytes

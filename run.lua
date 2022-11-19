@@ -11,13 +11,13 @@ end
 
 local source = file:read("a")
 
-local tokens = ffox.lexer(source)
+local tokens = ffox.lex(source)
 pprint(tokens, "tokens")
 
-local ast = ffox.parser(tokens)
+local ast = ffox.parse(tokens)
 pprint(ast, "ast")
 
-local bytecode = ffox.compiler(ast)
+local bytecode = ffox.compile(ast)
 decompile_bytes(bytecode.bytes, bytecode.constants)
 
 local result = ffox.vm.run(bytecode.bytes, bytecode.constants)

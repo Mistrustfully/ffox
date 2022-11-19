@@ -37,5 +37,5 @@ return
 			"print",
 			"call",
 			"pop",
-		}),
+		}, true),
 	}
