@@ -25,6 +25,10 @@ local function variable_expr(name, assign_value)
 	return { type = "variable", name = name, assign_value = assign_value }
 end
 
+local function call_expr(callee, expressions)
+	return { type = "call", callee = callee, expressions = expressions }
+end
+
 local function return_statement(expr)
 	return { type = "return_statement", expr = expr }
 end
@@ -59,6 +63,10 @@ local function for_statement(initial, conditional, increment, statements)
 	}
 end
 
+local function fn_statement(name, arguments, statements)
+	return { type = "fn_statement", name = name, arguments = arguments, statements = statements }
+end
+
 return {
 	expr = {
 		binary = binary_expr,
@@ -67,6 +75,7 @@ return {
 		string = string_expr,
 		literal = literal_expr,
 		variable = variable_expr,
+		call = call_expr,
 	},
 	statement = {
 		freturn = return_statement,
@@ -76,5 +85,6 @@ return {
 		if_statement = if_statement,
 		while_statement = while_statement,
 		for_statement = for_statement,
+		fn = fn_statement,
 	},
 }

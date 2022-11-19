@@ -52,6 +52,20 @@ local function grouping(parser)
 	return exp
 end
 
+local function call(parser, callee)
+	local expressions = {}
+	if parser.peek().type ~= token_type.r_paren then
+		repeat
+			if parser.peek().type == token_type.comma then
+				parser.advance()
+			end
+			table.insert(expressions, parser.parse_precendence())
+		until parser.peek().type ~= token_type.comma
+	end
+	parser.consume(token_type.r_paren, "no r paren??")
+	return expr.call(callee, expressions)
+end
+
 local function unary(parser)
 	local operator = parser.previous()
 	local operand = parser.parse_precendence(precedence_enum.unary)
@@ -86,7 +100,7 @@ rules = {
 	[token_type.less_equal] = { infix = binary, precedence = precedence_enum.comparison },
 	[token_type.equal_equal] = { infix = binary, precedence = precedence_enum.comparison },
 
-	[token_type.l_paren] = { prefix = grouping, precedence = precedence_enum.grouping },
+	[token_type.l_paren] = { prefix = grouping, infix = call, precedence = precedence_enum.grouping },
 	[token_type.eof] = { precedence = precedence_enum.none },
 	[token_type.bang] = { prefix = unary, precedence = precedence_enum.unary },
 	[token_type.identifier] = { prefix = variable, precedence = precedence_enum.none },
@@ -223,7 +237,25 @@ local function parse(tokens)
 				local statements = block()
 				return statement.for_statement(initial, conditional, increment, statements)
 			end,
-			[token_type.fn] = function() end,
+			[token_type.fn] = function()
+				self.advance()
+				local name = self.consume(token_type.identifier, "Expected function name!").lex
+				local arguments = {}
+				self.consume(token_type.l_paren)
+				if self.peek().type ~= token_type.r_paren then
+					repeat
+						if self.peek().type == token_type.comma then
+							self.advance()
+						end
+
+						table.insert(arguments, self.consume(token_type.identifier, "Expected identifier"))
+					until self.peek().type ~= token_type.comma
+				end
+				self.consume(token_type.r_paren)
+				self.consume(token_type.l_brace)
+				local statements = block()
+				return statement.fn(name, arguments, statements)
+			end,
 			default = function()
 				return statement.expr(self.parse_precendence())
 			end,

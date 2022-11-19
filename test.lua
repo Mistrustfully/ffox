@@ -1,7 +1,5 @@
 #!/usr/bin/luajit
 local lang = require("src.init")
-local opcode = require("src.common.opcode")
-local pprint = require("src.util").pprint
 
 local function for_each_file(dir, fn)
 	local p = io.popen('find "' .. dir .. '" -type f') --Open directory look for files, save data in p. By giving '-type f' as parameter, it returns all files.

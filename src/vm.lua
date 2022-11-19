@@ -4,10 +4,10 @@ local opcode = require("src.common.opcode")[1]
 local match, pprint = util.match, util.pprint
 local fnil = {}
 
-local function run(source, constants)
+local function run(source, constants, _stack, _globals)
 	local ip = 0
-	local stack = {}
-	local globals = {}
+	local stack = _stack or {}
+	local globals = _globals or {}
 
 	local jump = 1
 
@@ -176,7 +176,12 @@ local function run(source, constants)
 
 			[opcode.call] = function()
 				local fn = table.remove(stack)
-				run(fn[1], fn[2])
+				-- pop off all the arguments off the stack
+				local arguments = {}
+				for _ = 1, read_byte() do
+					table.insert(arguments, table.remove(stack))
+				end
+				table.insert(stack, run(fn.bytes, fn.constants, arguments, globals))
 			end,
 
 			[opcode.pop] = function()

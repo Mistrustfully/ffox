@@ -1,0 +1,18 @@
+ fn callme(argument) {
+	let local = "a"
+	if argument {
+		return local
+	} else {
+		return "b"
+	}
+}
+
+fn function(ok, argument) {
+	fn inner(call) {
+		return call(argument)
+	}
+
+	return inner(ok)
+}
+
+return function(callme, true) == "a"

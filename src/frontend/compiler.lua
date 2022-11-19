@@ -1,11 +1,13 @@
 local opcodes = require("src.common.opcode")[1]
 local token_type = require("src.common.token")
-local match = require("src.util").match
+local util = require("src.util")
+
+local match, merge = util.match, util.merge
 
 -- Recusive function that compiles an AST into bytes and constants.
 local function compile(ast, bytes_, constants_, state_)
 	if not ast then
-		return
+		return {} -- Return an empty table to fix warnings
 	end
 
 	local bytes = bytes_ or {}
@@ -183,7 +185,7 @@ local function compile(ast, bytes_, constants_, state_)
 			local node = fold_constants(ast)
 			if node.type ~= "binary_expr" then
 				call(node)
-				return
+				return node
 			end
 
 			call(node.left)
@@ -251,6 +253,41 @@ local function compile(ast, bytes_, constants_, state_)
 			make_jump(opcodes.jump, to_conditional)
 			patch_jump(out_conditional)
 			exit_scope()
+		end,
+		fn_statement = function()
+			local fn_bytes = {}
+			local fn_arguments = {}
+			for i = #ast.arguments, 1, -1 do
+				local v = ast.arguments[i]
+				table.insert(fn_arguments, { name = v.lex, depth = state.depth + 1 })
+			end
+
+			local program = compile(
+				{ type = "__root__", statements = ast.statements },
+				fn_bytes,
+				nil,
+				{ locals = merge(fn_arguments, state.locals), depth = state.depth + 1 }
+			)
+			call({
+				type = "var_statement",
+				name = ast.name,
+				expr = {
+					type = "number",
+					literal = {
+						bytes = program.bytes,
+						constants = program.constants,
+						name = ast.name,
+						arity = #ast.arguments,
+					},
+				},
+				constant = false,
+			}) -- Declare the function as a value
+		end,
+		call = function()
+			call_statements(ast.expressions)
+			call(ast.callee)
+			table.insert(bytes, opcodes.call)
+			table.insert(bytes, #ast.expressions)
 		end,
 		expr_statement = function()
 			call(ast.expr)

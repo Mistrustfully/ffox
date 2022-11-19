@@ -56,4 +56,15 @@ local function pprint(value, index, tabs_)
 	end
 end
 
-return { match = match, enum = enum, pprint = pprint }
+local function merge(t1, t2)
+	local merged = {}
+	for _, v in ipairs(t1) do
+		table.insert(merged, v)
+	end
+	for _, v in pairs(t2) do
+		table.insert(merged, v)
+	end
+	return merged
+end
+
+return { match = match, enum = enum, pprint = pprint, merge = merge }

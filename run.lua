@@ -18,7 +18,6 @@ local ast = ffox.parser(tokens)
 pprint(ast, "ast")
 
 local bytecode = ffox.compiler(ast)
-pprint(bytecode, "bytecode")
 decompile_bytes(bytecode.bytes, bytecode.constants)
 
 local result = ffox.vm.run(bytecode.bytes, bytecode.constants)
