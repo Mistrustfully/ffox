@@ -1,5 +1,5 @@
 #!/usr/bin/luajit
-local lang = require("src.init")
+local ffox = require("src.init")
 
 local function for_each_file(dir, fn)
 	local p = io.popen('find "' .. dir .. '" -type f') --Open directory look for files, save data in p. By giving '-type f' as parameter, it returns all files.
@@ -17,10 +17,7 @@ for_each_file("test", function(file, file_name_)
 	local file_name = file_name_:gsub("test/", "")
 
 	local source = file:read("a")
-	local tokens = lang.lexer(source)
-	local ast = lang.parser(tokens)
-	local program = lang.compiler(ast)
-	local result = lang.vm.run(program.bytes, program.constants)
+	local result = ffox.run(source)
 
 	if result then
 		print("\27[1;32m  [PASS]  \27[0;1m" .. file_name)
