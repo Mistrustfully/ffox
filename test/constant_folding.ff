@@ -1,1 +1,0 @@
-return 10 * 10 / 2421 / 239 * 1 < 1 // Compiles to a single instruction, ftrue.

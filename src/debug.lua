@@ -76,4 +76,4 @@ local function decompile_bytes(bytes, constants, _tabs, _name)
 	print(purple(tabs .. "╰" .. dash .. "> " .. (_name or "main") .. " >" .. dash))
 end
 
-return decompile_bytes
+return { decompile = decompile_bytes }

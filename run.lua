@@ -1,7 +1,7 @@
 #!/usr/bin/luajit
 local ffox = require("src.init")
 local pprint = require("src.util").pprint
-local decompile_bytes = require("src.debug")
+local decompile_bytes = require("src.debug").decompile
 
 local file = io.open(arg[1])
 if not file then
